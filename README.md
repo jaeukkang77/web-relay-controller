@@ -9,19 +9,18 @@
 
 | 레이어 | 기술 |
 |---|---|
-| Frontend | React 19 + TypeScript + Tailwind CSS v4 + Vite |
-| 서버 상태 | TanStack Query v5 |
-| Backend | NestJS 11 + TypeScript |
-| ORM | Prisma 6 |
-| DB | PostgreSQL |
-| 장치 통신 | TCP |
-| 스케줄러 | node-cron |
-| 인증 | JWT (Access 15m + Refresh 30d) |
-| 프로세스 관리 | PM2 |
+| Frontend | <img src="https://img.shields.io/badge/React-v19-61DAFB?logo=react"/> <img src="https://img.shields.io/badge/TypeScript-v5-3178C6?logo=typescript"/> <img src="https://img.shields.io/badge/Tailwind CSS-v4-06B6D4?logo=tailwindcss"/> <img src="https://img.shields.io/badge/Vite-v7-9135FF?logo=vite"/> |
+| 서버 상태 | <img src="https://img.shields.io/badge/TanStak Query-v5-000000?logo=tanstack"/> |
+| Backend | <img src="https://img.shields.io/badge/TypeScript-v5-3178C6?logo=typescript"/> <img src="https://img.shields.io/badge/NestJS-v11-E0234E?logo=nestjs"/> |
+| ORM | <img src="https://img.shields.io/badge/Prisma-v6-2D3748?logo=prisma"/> |
+| DB | <img src="https://img.shields.io/badge/PostgreSQL-v18-4169E1?logo=postgresql"/> |
+| 장치 통신 | <img src="https://img.shields.io/badge/TCP-gray"/> |
+| 인증 | <img src="https://img.shields.io/badge/JWT (Access 15m + Refresh 30d)-gray"/>|
+| 프로세스 관리 | <img src="https://img.shields.io/badge/PM2-v6-2B037A?logo=pm2"/> |
 
 ---
 
-## 프로젝트 구조
+## 프로젝트 아키텍쳐
 
 ```
 web-relay-controller/
@@ -73,7 +72,7 @@ web-relay-controller/
 
 ---
 
-## 도메인 구조
+## 도메인 아키텍쳐
 
 ```
 User → Region → Device → Schedule
@@ -100,7 +99,7 @@ User → Region → Device → Schedule
 
 ---
 
-## 인증 구조
+## 인증 아키텍쳐
 
 - **Access Token**: 15분, 클라이언트 메모리 저장 (localStorage 미사용)
 - **Refresh Token**: 30일, DB에 bcrypt 해시 저장
