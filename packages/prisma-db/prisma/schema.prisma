@@ -1,0 +1,154 @@
+// ============================================================
+// Generator & Datasource
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// Enum
+// ============================================================
+
+enum UserRole {
+  admin
+  user
+}
+
+// ============================================================
+// Auth Domain
+// ============================================================
+
+/// 사용자 계정
+model User {
+  id           String   @id                    // 로그인 아이디 (UNIQUE)
+  passwordHash String   @map("password_hash")  // bcrypt 해시
+  role         UserRole                        // admin | user
+
+  regionId Int?    @map("region_id") // admin은 NULL 허용
+  region   Region? @relation(fields: [regionId], references: [id], onDelete: SetNull)
+
+  refreshTokens RefreshToken[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+
+  @@map("users")
+}
+
+/// JWT Refresh Token
+model RefreshToken {
+  id     BigInt @id @default(autoincrement())
+  userId String @map("user_id")
+
+  tokenHash String    @unique   @map("token_hash") // bcrypt 해시 저장
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")           // NULL = 유효, 값 있음 = 폐기
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+/// 로그인 시도 로그 (IP 기반 차단 판정 기준)
+model AuthAttemptLog {
+  id        Int     @id @default(autoincrement())
+  userId    String? @map("user_id")    // 존재하지 않는 아이디로 시도 시 NULL
+  ipAddress String  @map("ip_address")
+  success   Boolean
+  reason    String?                    // 실패 사유 (INVALID_PASSWORD, IP_BLOCKED 등)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([ipAddress, createdAt]) // IP 기반 차단 조회
+  @@index([createdAt])            // 로그 정리
+  @@map("auth_attempt_logs")
+}
+
+// ============================================================
+// Region Domain
+// ============================================================
+
+/// 지역 (장치 그룹화 단위)
+model Region {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique             // 지역명 (중복 불가)
+  imagePath String? @map("image_path") // 로컬 디스크 저장 경로
+
+  users   User[]
+  devices Device[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+
+  @@map("regions")
+}
+
+// ============================================================
+// Device Domain
+// ============================================================
+
+/// 릴레이 장치 (SG-3021TIL 기준 Modbus TCP)
+model Device {
+  id       Int @id @default(autoincrement())
+  regionId Int @map("region_id")
+
+  name    String
+  ip      String @map("ip_address") // 장치 IP (내부망)
+  port    Int    @default(4001)     // Modbus TCP 포트
+  slaveId Int    @default(1)        @map("slave_id")      // Modbus Slave ID
+  address Int                       @map("relay_address") // 릴레이 레지스터 주소 (0=R1, 1=R2)
+
+  isOn     Boolean @default(false) @map("is_on")     // 현재 릴레이 ON/OFF 상태
+  isOnline Boolean @default(false) @map("is_online") // 장치 네트워크 연결 여부
+
+  region    Region     @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  schedules Schedule[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+
+  @@index([regionId])
+  @@index([isOnline])
+  @@index([ip])
+  @@map("devices")
+}
+
+// ============================================================
+// Schedule Domain
+// ============================================================
+
+/// 장치 자동 ON/OFF 스케줄
+model Schedule {
+  id       Int    @id @default(autoincrement())
+  deviceId Int    @map("device_id")
+
+  name String? // 스케줄 식별 이름 (선택)
+
+  onTime  DateTime? @db.Time(0) @map("on_time")  // 릴레이 ON 시각 (HH:MM:SS)
+  offTime DateTime? @db.Time(0) @map("off_time") // 릴레이 OFF 시각 (HH:MM:SS)
+  // onTime, offTime 중 하나 이상 필수
+
+  dateFrom DateTime @db.Date @map("date_from") // 스케줄 시작일
+  dateTo   DateTime @db.Date @map("date_to")   // 스케줄 종료일
+
+  enabled Boolean @default(true) // 활성화 여부
+
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+
+  @@index([deviceId])
+  @@index([enabled, dateFrom, dateTo]) // 스케줄 실행 조회 최적화
+  @@map("schedules")
+}

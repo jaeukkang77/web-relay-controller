@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: relay-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: relay_user
+      POSTGRES_PASSWORD: pJa3wO0k!
+      POSTGRES_DB: relay_db
+    ports:
+      - "5460:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U relay_user -d relay_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
