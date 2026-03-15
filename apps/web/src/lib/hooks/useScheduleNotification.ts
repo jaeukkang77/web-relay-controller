@@ -28,7 +28,7 @@ function showNotification(event: ScheduleEventData): void {
     icon:     '/favicon.ico',
     tag:      `relay-schedule-${event.deviceId}`,
     renotify: true,  // 동일 tag라도 매번 팝업 표시
-  })
+  } as NotificationOptions & { renotify?: boolean })
 }
 
 /**
