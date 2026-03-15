@@ -1,0 +1,57 @@
+/* ── Pretendard 폰트 ──────────────────────────────────────── */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
+
+@import "tailwindcss";
+
+/* ── 디자인 토큰 ─────────────────────────────────────────── */
+@theme {
+  /* Font */
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', system-ui, sans-serif;
+
+  /* ── Accent ─────────────────────────────────────────────── */
+  --color-primary:       #22C55E; /* 버튼, 링크, 포커스 */
+  --color-primary-dark:  #16A34A; /* 터치 피드백 (Pressed) */
+  --color-primary-light: #EEF2FF; /* 배지, 태그 */
+
+  /* ── Neutral ────────────────────────────────────────────── */
+  --color-canvas:  #F5F5F7; /* 앱 배경 */
+  --color-surface: #FFFFFF; /* 카드, 모달 */
+  --color-line:    #E5E5EA; /* 구분선 */
+
+  /* ── Text ───────────────────────────────────────────────── */
+  --color-ink:   #1C1C1E; /* Text Primary */
+  --color-ink-2: #6B6B7A; /* Text Secondary */
+  --color-ink-3: #C7C7CC; /* Text Tertiary */
+
+  /* ── Semantic ───────────────────────────────────────────── */
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-danger:  #EF4444;
+  --color-info:    #3B82F6;
+
+  /* ── 보더 레디우스 ──────────────────────────────────────── */
+  --radius-sm:   8px;    /* 배지, 태그 */
+  --radius-md:   12px;   /* 입력 필드 */
+  --radius-lg:   14px;   /* 카드 */
+  --radius-xl:   16px;   /* 모달 */
+  --radius-2xl:  20px;   /* 바텀시트 상단 */
+  --radius-full: 9999px; /* 버튼, 아바타 */
+}
+
+/* ── 기본 ────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
