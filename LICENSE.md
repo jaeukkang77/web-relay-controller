@@ -1,6 +1,6 @@
-Reference-Only License v1.0
+# Reference-Only License v1.0
 
-Copyright 2026. jaeukkang77 all rights reserved.
+__**Copyright 2026. jaeukkang77 all rights reserved.**__
 
 1. Purpose
 This repository is published strictly for educational and reference purposes.
@@ -16,17 +16,16 @@ reviewing implementation approaches, and understanding software architecture.
 
 4. Prohibited Use
 Without explicit prior written permission from the copyright holder, you may NOT:
-
-- copy the Software in whole or in part
-- modify or create derivative works
-- reuse any portion of the Software in another project
-- replicate the architecture, structure, algorithms, or implementation patterns
-- distribute, publish, sublicense, rent, lease, lend, sell, or transfer the Software
-- use the Software in production systems, commercial software, or internal tools
-- incorporate the Software into any product, service, or application
-- submit the Software as part of academic assignments or coursework
-- benchmark, compare, or evaluate the Software for publication
-- use the Software for training, evaluation, fine-tuning, or improvement of
+    - copy the Software in whole or in part
+    - modify or create derivative works
+    - reuse any portion of the Software in another project
+    - replicate the architecture, structure, algorithms, or implementation patterns
+    - distribute, publish, sublicense, rent, lease, lend, sell, or transfer the Software
+    - use the Software in production systems, commercial software, or internal tools
+    - incorporate the Software into any product, service, or application
+    - submit the Software as part of academic assignments or coursework
+    - benchmark, compare, or evaluate the Software for publication
+    - use the Software for training, evaluation, fine-tuning, or improvement of
   artificial intelligence or machine learning models
 
 5. No License Granted
