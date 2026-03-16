@@ -1,0 +1,38 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull latest code
+        run: git pull origin master
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Generate Prisma Client
+        run: pnpm -F @repo/prisma-db prisma:generate
+
+      - name: Build prisma-db
+        run: pnpm -F @repo/prisma-db build
+
+      - name: Run DB migrations
+        run: pnpm -F @repo/prisma-db prisma:deploy
+
+      - name: Build API
+        run: pnpm -F @repo/api build
+
+      - name: Build Web
+        run: pnpm -F @repo/web build
+
+      - name: Restart API
+        run: pm2 restart relay-api
+
+      - name: Reload nginx
+        run: C:\nginx\nginx.exe -s reload
