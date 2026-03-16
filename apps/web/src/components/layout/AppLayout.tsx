@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router'
 import { useAuth } from '../../lib/auth/auth-store'
 import { authApi } from '../../lib/api/auth.api'
@@ -114,11 +114,6 @@ export default function AppLayout() {
   const [notifPerm, setNotifPerm] = useState<NotificationPermission>(
     'Notification' in window ? Notification.permission : 'denied',
   )
-  useEffect(() => {
-    if (!('Notification' in window)) return
-    setNotifPerm(Notification.permission)
-  }, [])
-
   async function handleRequestNotif() {
     const perm = await requestNotificationPermission()
     setNotifPerm(perm)
@@ -150,7 +145,7 @@ export default function AppLayout() {
               <ZapIcon size={16} />
             </div>
             <span className="text-[17px] font-semibold tracking-tight text-ink">
-              릴레이 컨트롤러
+              WC I/O System
             </span>
           </div>
         </div>
@@ -243,7 +238,7 @@ export default function AppLayout() {
             <ZapIcon size={16} />
           </div>
           <span className="text-[17px] font-semibold tracking-tight text-ink">
-            릴레이 컨트롤러
+            WC I/O System
           </span>
           {/* 알림 권한 버튼 (모바일, default 상태일 때만) */}
           {'Notification' in window && notifPerm === 'default' && (
