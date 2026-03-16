@@ -30,7 +30,7 @@ jobs:
           restore-keys: pnpm-
 
       - name: Clean node_modules
-        run: Remove-Item -Recurse -Force node_modules -ErrorAction SilentlyContinue
+        run: cmd /c "if exist node_modules rmdir /s /q node_modules"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
