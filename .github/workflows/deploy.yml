@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Stop API
+        run: pm2 stop relay-api
+
       - name: Generate Prisma Client
         run: pnpm -F @repo/prisma-db prisma:generate
 
