@@ -28,7 +28,7 @@ export class DevicesService {
 
   // ── 생성 (admin only) ───────────────────────────────────────
   async create(regionId: number, dto: CreateDeviceDto): Promise<Device> {
-    return this.repo.create({
+    const device = await this.repo.create({
       regionId,
       name:    dto.name,
       ip:      dto.ip,
@@ -36,6 +36,18 @@ export class DevicesService {
       slaveId: dto.slaveId ?? 1,
       address: dto.address,
     });
+
+    // 생성 직후 온라인/릴레이 상태 즉시 동기화
+    try {
+      const result = await this.relay.checkOnlineAndRead(
+        device.ip, device.port, device.slaveId, device.address,
+      );
+      const data: { isOnline: boolean; isOn?: boolean } = { isOnline: result.isOnline };
+      if (result.isOn !== null) data.isOn = result.isOn;
+      return this.repo.update(device.id, data);
+    } catch {
+      return device;
+    }
   }
 
   // ── 수정 (admin only) ───────────────────────────────────────
