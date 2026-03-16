@@ -42,4 +42,5 @@ jobs:
         run: pm2 restart relay-api
 
       - name: Reload nginx
-        run: C:\nginx\nginx.exe -s reload
+        working-directory: C:\nginx
+        run: .\nginx.exe -s reload
