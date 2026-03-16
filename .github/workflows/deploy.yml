@@ -20,8 +20,15 @@ jobs:
       - name: Pull latest code
         run: git pull origin master
 
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: C:\Users\SenInt\AppData\Local\pnpm\store
+          key: pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-
+
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma Client
         run: pnpm -F @repo/prisma-db prisma:generate
