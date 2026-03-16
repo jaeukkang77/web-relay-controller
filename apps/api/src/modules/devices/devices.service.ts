@@ -11,7 +11,7 @@ import { DevicesRepository } from './devices.repository';
 export class DevicesService {
   constructor(
     private readonly repo:   DevicesRepository,
-    private readonly modbus: RelayService,
+    private readonly relay: RelayService,
   ) {}
 
   // ── 목록 조회 ───────────────────────────────────────────────
@@ -67,7 +67,7 @@ export class DevicesService {
     const value = action === 'on';
 
     try {
-      await this.modbus.setRelay(
+      await this.relay.setRelay(
         device.ip,
         device.port,
         device.slaveId,
@@ -95,7 +95,7 @@ export class DevicesService {
     this.assertRegionAccess(regionId, user);
     const device = await this.assertDevice(regionId, id);
 
-    const result = await this.modbus.checkOnlineAndRead(
+    const result = await this.relay.checkOnlineAndRead(
       device.ip,
       device.port,
       device.slaveId,
