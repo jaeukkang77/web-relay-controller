@@ -22,23 +22,18 @@ jobs:
           git fetch origin master
           git reset --hard origin/master
 
-      - name: Debug versions
-        run: |
-          node -v
-          pnpm -v
-          git status
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: C:\Users\SenInt\AppData\Local\pnpm\store
+          key: pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Verify tslib
-        run: pnpm why tslib
-
       - name: Stop API
-        run: |
-          if (pm2 list | Select-String "relay-api") {
-            pm2 delete relay-api
-          }
+        run: pm2 stop relay-api
 
       - name: Generate Prisma Client
         run: pnpm -F @repo/prisma-db prisma:generate
@@ -55,10 +50,8 @@ jobs:
       - name: Build Web
         run: pnpm -F web build
 
-      - name: Start API
-        run: |
-          pm2 start apps/api/dist/main.js --name relay-api
-          pm2 save
+      - name: Restart API
+        run: pm2 restart relay-api
 
       - name: Reload nginx
         working-directory: C:\nginx
