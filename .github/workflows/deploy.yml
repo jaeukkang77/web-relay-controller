@@ -34,8 +34,13 @@ jobs:
       - name: Verify tslib
         run: pnpm why tslib
 
-      - name: Stop API
-        run: pm2 delete relay-api || exit 0
+      - name: Restart API
+        run: |
+          if (pm2 list | Select-String "relay-api") {
+            pm2 delete relay-api
+          }
+          pm2 start apps/api/dist/main.js --name relay-api
+          pm2 save
 
       - name: Generate Prisma Client
         run: pnpm -F @repo/prisma-db prisma:generate
