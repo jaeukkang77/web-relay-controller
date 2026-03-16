@@ -29,6 +29,9 @@ jobs:
           key: pnpm-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: pnpm-
 
+      - name: Clean node_modules
+        run: Remove-Item -Recurse -Force node_modules -ErrorAction SilentlyContinue
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
