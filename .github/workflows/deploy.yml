@@ -21,25 +21,25 @@ jobs:
         run: git pull origin master
 
       - name: Install dependencies
-        run: pnpm install
+        run: $env:APPDATA\npm\pnpm.cmd install
 
       - name: Generate Prisma Client
-        run: pnpm -F @repo/prisma-db prisma:generate
+        run: $env:APPDATA\npm\pnpm.cmd -F @repo/prisma-db prisma:generate
 
       - name: Build prisma-db
-        run: pnpm -F @repo/prisma-db build
+        run: $env:APPDATA\npm\pnpm.cmd -F @repo/prisma-db build
 
       - name: Run DB migrations
-        run: pnpm -F @repo/prisma-db prisma:deploy
+        run: $env:APPDATA\npm\pnpm.cmd -F @repo/prisma-db prisma:deploy
 
       - name: Build API
-        run: pnpm -F @repo/api build
+        run: $env:APPDATA\npm\pnpm.cmd -F @repo/api build
 
       - name: Build Web
-        run: pnpm -F @repo/web build
+        run: $env:APPDATA\npm\pnpm.cmd -F @repo/web build
 
       - name: Restart API
-        run: pm2 restart relay-api
+        run: $env:APPDATA\npm\pm2.cmd restart relay-api
 
       - name: Reload nginx
         run: C:\nginx\nginx.exe -s reload
