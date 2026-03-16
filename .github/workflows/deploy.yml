@@ -5,11 +5,18 @@ on:
     branches: [master]
   workflow_dispatch:
 
+defaults:
+  run:
+    working-directory: C:\web-relay-controller\app
+
 jobs:
   deploy:
     runs-on: self-hosted
 
     steps:
+      - name: Set git safe directory
+        run: git config --global --add safe.directory C:/web-relay-controller/app
+
       - name: Pull latest code
         run: git pull origin master
 
