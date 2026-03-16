@@ -5,6 +5,10 @@ on:
     branches: [master]
   workflow_dispatch:
 
+defaults:
+  run:
+    working-directory: C:\web-relay-controller
+
 jobs:
   deploy:
     runs-on: self-hosted
