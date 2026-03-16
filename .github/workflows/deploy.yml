@@ -36,7 +36,7 @@ jobs:
         run: pnpm -F @repo/api build
 
       - name: Build Web
-        run: pnpm -F @repo/web build
+        run: pnpm -F web build
 
       - name: Restart API
         run: pm2 restart relay-api
