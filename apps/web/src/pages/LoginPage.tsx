@@ -162,7 +162,7 @@ export default function LoginPage() {
           </div>
           <div className="text-center">
             <h1 className="text-[28px] font-extrabold tracking-tight text-ink">
-              릴레이 컨트롤러
+              WC I/O System
             </h1>
             <p className="mt-1 text-[15px] text-ink-2">
               계정에 로그인하세요

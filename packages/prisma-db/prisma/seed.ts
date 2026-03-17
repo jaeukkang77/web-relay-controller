@@ -54,7 +54,7 @@ async function seedDevices(): Promise<void> {
       ip: '192.168.1.100',
       port: 4001,
       slaveId: 1,
-      address: 0,
+      address: 1,
     },
     {
       regionId: region1.id,
@@ -62,7 +62,7 @@ async function seedDevices(): Promise<void> {
       ip: '192.168.1.100',
       port: 4001,
       slaveId: 1,
-      address: 1,
+      address: 2,
     },
     {
       regionId: region2.id,
@@ -70,7 +70,7 @@ async function seedDevices(): Promise<void> {
       ip: '192.168.1.101',
       port: 4001,
       slaveId: 1,
-      address: 0,
+      address: 1,
     },
   ];
 

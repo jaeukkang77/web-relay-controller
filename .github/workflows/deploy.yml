@@ -7,7 +7,7 @@ on:
 
 defaults:
   run:
-    working-directory: C:\web-relay-controller\app
+    working-directory: /opt/web-relay-controller
 
 jobs:
   deploy:
@@ -15,47 +15,15 @@ jobs:
 
     steps:
       - name: Set git safe directory
-        run: git config --global --add safe.directory C:/web-relay-controller/app
+        run: git config --global --add safe.directory /opt/web-relay-controller
 
       - name: Pull latest code
         run: |
           git fetch origin master
           git reset --hard origin/master
 
-      - name: Cache pnpm store
-        uses: actions/cache@v4
-        with:
-          path: C:\Users\SenInt\AppData\Local\pnpm\store
-          key: pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: pnpm-
+      - name: Build and restart containers
+        run: docker compose up -d --build
 
-      - name: Clean node_modules
-        run: cmd /c "if exist node_modules rmdir /s /q node_modules"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Stop API
-        run: pm2 stop relay-api
-
-      - name: Generate Prisma Client
-        run: pnpm -F @repo/prisma-db prisma:generate
-
-      - name: Build prisma-db
-        run: pnpm -F @repo/prisma-db build
-
-      - name: Run DB migrations
-        run: pnpm -F @repo/prisma-db prisma:deploy
-
-      - name: Build API
-        run: pnpm -F @repo/api build
-
-      - name: Build Web
-        run: pnpm -F web build
-
-      - name: Restart API
-        run: pm2 restart relay-api
-
-      - name: Reload nginx
-        working-directory: C:\nginx
-        run: .\nginx.exe -s reload
+      - name: Remove unused Docker images
+        run: docker image prune -f
