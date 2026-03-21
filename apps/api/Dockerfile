@@ -38,6 +38,12 @@ COPY packages/prisma-db/package.json ./packages/prisma-db/
 COPY apps/api/entrypoint.sh ./entrypoint.sh
 RUN sed -i 's/\r//' ./entrypoint.sh && chmod +x ./entrypoint.sh
 
+# uploads 디렉터리 생성 및 권한 설정
+RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
+
+# non-root 사용자로 실행 (보안)
+USER node
+
 EXPOSE 3000
 
 ENTRYPOINT ["sh", "./entrypoint.sh"]
