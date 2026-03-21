@@ -74,7 +74,11 @@ export function useScheduleNotification(): void {
             try {
               const result = await authApi.refresh(rt)
               tokenStore.set({ accessToken: result.accessToken, refreshToken: result.refreshToken })
-            } catch { /* refresh 실패 → 일반 재연결 */ }
+            } catch {
+              // refresh 실패 → 토큰 무효, 재연결 중단 (재로그인 필요)
+              tokenStore.clear()
+              return
+            }
           }
           if (active) {
             reconnTimer = setTimeout(() => connect(retryCount + 1), 1_000)
