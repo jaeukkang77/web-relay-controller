@@ -201,8 +201,8 @@ export default function AppLayout() {
             </div>
           </div>
 
-          {/* 알림 권한 버튼 — 항상 노출 (권한 상태 표시) */}
-          {'Notification' in window && (
+          {/* 알림 권한 버튼 — HTTPS 또는 granted/default 상태일 때만 표시 */}
+          {'Notification' in window && (location.protocol === 'https:' || notifPerm !== 'denied') && (
             <button
               onClick={handleRequestNotif}
               disabled={notifPerm !== 'default'}
@@ -253,8 +253,8 @@ export default function AppLayout() {
           <span className="text-[17px] font-semibold tracking-tight text-ink">
             WC I/O System
           </span>
-          {/* 알림 권한 버튼 (모바일, 항상 표시) */}
-          {'Notification' in window && (
+          {/* 알림 권한 버튼 (모바일, HTTPS 또는 granted/default 상태일 때만 표시) */}
+          {'Notification' in window && (location.protocol === 'https:' || notifPerm !== 'denied') && (
             <button
               onClick={handleRequestNotif}
               disabled={notifPerm !== 'default'}

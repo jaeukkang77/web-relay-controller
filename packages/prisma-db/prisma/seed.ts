@@ -6,7 +6,11 @@ const prisma = new PrismaClient();
 const BCRYPT_COST = 12;
 
 async function seedUsers(): Promise<void> {
-  const adminPasswordHash = await bcrypt.hash('102100**', BCRYPT_COST);
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD;
+  if (!adminPassword) {
+    throw new Error('SEED_ADMIN_PASSWORD 환경변수가 설정되지 않았습니다.');
+  }
+  const adminPasswordHash = await bcrypt.hash(adminPassword, BCRYPT_COST);
 
   const admin = await prisma.user.upsert({
     where: { id: 'admin' },

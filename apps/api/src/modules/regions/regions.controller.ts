@@ -64,7 +64,7 @@ export class RegionsController {
   // POST /regions/:id/image — admin only (multer memory storage)
   @Post(':id/image')
   @Roles('admin')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 5 * 1024 * 1024 } }))
   uploadImage(
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile() file: Express.Multer.File,
