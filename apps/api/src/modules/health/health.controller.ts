@@ -5,6 +5,7 @@ import {
   PrismaHealthIndicator,
 } from '@nestjs/terminus';
 import { PrismaService } from '../../database/prisma.service';
+import { Public } from '../../common/decorators/public.decorator';
 
 @Controller('health')
 export class HealthController {
@@ -15,11 +16,13 @@ export class HealthController {
   ) {}
 
   @Get()
+  @Public()
   @HealthCheck()
-  check() {
-    return this.health.check([
-      () =>
-        this.prismaIndicator.pingCheck('database', this.prisma),
+  async check() {
+    const result = await this.health.check([
+      () => this.prismaIndicator.pingCheck('database', this.prisma),
     ]);
+    // 외부에 DB 상세 정보 노출 방지: status만 반환
+    return { status: result.status };
   }
 }
