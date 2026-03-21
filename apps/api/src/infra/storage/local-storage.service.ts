@@ -1,6 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { promises as fs } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
+
+/** 업로드 베이스 디렉터리 (절대 경로) */
+const UPLOAD_BASE = resolve(process.cwd(), 'uploads');
 
 @Injectable()
 export class LocalStorageService {
@@ -14,11 +17,19 @@ export class LocalStorageService {
    */
   async save(dir: string, filename: string, buffer: Buffer): Promise<string> {
     try {
-      const absDir = join(process.cwd(), dir);
+      const absDir = resolve(process.cwd(), dir);
+      const absFile = resolve(absDir, filename);
+
+      // Path Traversal 방지: 업로드 디렉터리 밖으로 벗어나는지 검증
+      if (!absDir.startsWith(UPLOAD_BASE) || !absFile.startsWith(UPLOAD_BASE)) {
+        throw new BadRequestException('잘못된 파일 경로입니다.');
+      }
+
       await fs.mkdir(absDir, { recursive: true });
-      await fs.writeFile(join(absDir, filename), buffer);
+      await fs.writeFile(absFile, buffer);
       return `/${dir}/${filename}`;
     } catch (err) {
+      if (err instanceof BadRequestException) throw err;
       throw new InternalServerErrorException(
         `파일 저장 실패: ${(err as Error).message}`,
       );
@@ -33,7 +44,13 @@ export class LocalStorageService {
   async delete(filePath: string): Promise<void> {
     try {
       // URL 경로 ('/uploads/...') → 절대 경로
-      const absPath = join(process.cwd(), filePath.replace(/^\//, ''));
+      const absPath = resolve(process.cwd(), filePath.replace(/^\//, ''));
+
+      // Path Traversal 방지: 업로드 디렉터리 밖의 파일 삭제 차단
+      if (!absPath.startsWith(UPLOAD_BASE)) {
+        return;
+      }
+
       await fs.unlink(absPath);
     } catch (err: unknown) {
       // 파일이 없으면 무시
