@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { appConfigOptions } from './config/app.config';
 import { PrismaModule } from './database/prisma.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -29,11 +30,18 @@ import { EventsModule }  from './modules/events/events.module';
 // ── Jobs ─────────────────────────────────────────────────────
 import { DeviceOnlineJob }   from './jobs/device-online.job';
 import { ScheduleRunnerJob } from './jobs/schedule-runner.job';
+import { TokenCleanupJob }   from './jobs/token-cleanup.job';
 
 @Module({
   imports: [
     // ── 전역 설정 (가장 먼저 로드) ──────────────────────────
     ConfigModule.forRoot(appConfigOptions),
+
+    // ── 전역 Rate Limiting ─────────────────────────────────
+    ThrottlerModule.forRoot([{
+      ttl: 60_000,   // 1분
+      limit: 60,     // 요청 60회
+    }]),
 
     // ── 전역 DB 연결 ────────────────────────────────────────
     PrismaModule,
@@ -62,10 +70,13 @@ import { ScheduleRunnerJob } from './jobs/schedule-runner.job';
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     // RolesGuard: @Roles('admin') 데코레이터 기반 역할 검증
     { provide: APP_GUARD, useClass: RolesGuard },
+    // ThrottlerGuard: 전역 요청 속도 제한 (60req/min)
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
 
     // ── Jobs ─────────────────────────────────────────────────
     DeviceOnlineJob,
     ScheduleRunnerJob,
+    TokenCleanupJob,
   ],
 })
 export class AppModule {}
