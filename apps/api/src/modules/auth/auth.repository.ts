@@ -52,6 +52,19 @@ export class AuthRepository {
     return this.prisma.authAttemptLog.create({ data });
   }
 
+  /** 만료 또는 폐기된 Refresh Token 정리 */
+  async purgeExpiredTokens(): Promise<number> {
+    const { count } = await this.prisma.refreshToken.deleteMany({
+      where: {
+        OR: [
+          { revokedAt: { not: null } },
+          { expiresAt: { lt: new Date() } },
+        ],
+      },
+    });
+    return count;
+  }
+
   /**
    * 최근 windowMin분 내 특정 IP의 실패 횟수 조회.
    * IP 기반 로그인 차단 판정에 사용한다.
