@@ -17,13 +17,37 @@ jobs:
       - name: Set git safe directory
         run: git config --global --add safe.directory /opt/web-relay-controller
 
+      - name: Verify branch
+        run: |
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+          echo "Deploying branch: master (current: $CURRENT_BRANCH)"
+
       - name: Pull latest code
         run: |
           git fetch origin master
           git reset --hard origin/master
 
+      - name: Verify .env exists
+        run: |
+          if [ ! -f .env ]; then
+            echo "ERROR: .env file not found"
+            exit 1
+          fi
+
       - name: Build and restart containers
         run: docker compose up -d --build
+
+      - name: Wait for health check
+        run: |
+          echo "Waiting for API health check..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000/api/health > /dev/null 2>&1; then
+              echo "API is healthy"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "WARNING: Health check timed out"
 
       - name: Remove unused Docker images
         run: docker image prune -f
