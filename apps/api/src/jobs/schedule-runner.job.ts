@@ -47,9 +47,10 @@ export class ScheduleRunnerJob implements OnModuleInit, OnModuleDestroy {
 
   async run(): Promise<void> {
     const now    = new Date();
-    const hour   = now.getHours();   // 서버 로컬 시각
+    const hour   = now.getHours();   // 서버 로컬 시각 (TZ=Asia/Seoul)
     const minute = now.getMinutes();
-    const todayStr = now.toISOString().split('T')[0]; // "YYYY-MM-DD" (UTC 기준)
+    // 로컬 날짜 기준으로 비교 (UTC 기반 toISOString은 자정 근처 날짜 불일치 가능)
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
     // 오늘 날짜 범위 내 + enabled 스케줄 조회
     const schedules = await this.schedulesRepo.findActiveToday();
