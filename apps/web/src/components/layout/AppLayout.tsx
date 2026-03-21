@@ -119,6 +119,13 @@ export default function AppLayout() {
     setNotifPerm(perm)
   }
 
+  // 버튼 텍스트: 권한 상태에 따라 표시
+  const notifButtonText = {
+    'default': '알림 허용',
+    'granted': '✓ 알림 활성화',
+    'denied': '✗ 알림 거절됨',
+  }[notifPerm]
+
   async function handleLogout() {
     const refreshToken = tokenStore.getRefresh()
     if (refreshToken) {
@@ -194,20 +201,26 @@ export default function AppLayout() {
             </div>
           </div>
 
-          {/* 알림 권한 버튼 — default 상태일 때만 노출 */}
-          {'Notification' in window && notifPerm === 'default' && (
+          {/* 알림 권한 버튼 — 항상 노출 (권한 상태 표시) */}
+          {'Notification' in window && (
             <button
               onClick={handleRequestNotif}
-              className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 mb-0.5
-                         text-[14px] font-medium text-amber-600 bg-amber-50
-                         hover:bg-amber-100 transition-colors"
+              disabled={notifPerm !== 'default'}
+              className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 mb-0.5
+                         text-[14px] font-medium transition-colors ${
+                notifPerm === 'default'
+                  ? 'text-amber-600 bg-amber-50 hover:bg-amber-100 cursor-pointer'
+                  : notifPerm === 'granted'
+                  ? 'text-green-600 bg-green-50 cursor-default'
+                  : 'text-red-600 bg-red-50 cursor-not-allowed'
+              }`}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
               </svg>
-              알림 허용
+              {notifButtonText}
             </button>
           )}
 
@@ -240,13 +253,19 @@ export default function AppLayout() {
           <span className="text-[17px] font-semibold tracking-tight text-ink">
             WC I/O System
           </span>
-          {/* 알림 권한 버튼 (모바일, default 상태일 때만) */}
-          {'Notification' in window && notifPerm === 'default' && (
+          {/* 알림 권한 버튼 (모바일, 항상 표시) */}
+          {'Notification' in window && (
             <button
               onClick={handleRequestNotif}
-              className="ml-auto flex h-8 w-8 items-center justify-center rounded-full
-                         bg-amber-100 text-amber-600"
-              title="알림 허용"
+              disabled={notifPerm !== 'default'}
+              className={`ml-auto flex h-8 w-8 items-center justify-center rounded-full ${
+                notifPerm === 'default'
+                  ? 'bg-amber-100 text-amber-600 cursor-pointer'
+                  : notifPerm === 'granted'
+                  ? 'bg-green-100 text-green-600 cursor-default'
+                  : 'bg-red-100 text-red-600 cursor-not-allowed'
+              }`}
+              title={notifButtonText}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -259,7 +278,7 @@ export default function AppLayout() {
           {/* 유저 아바타 */}
           <div className={`flex h-8 w-8 items-center justify-center rounded-full
                           bg-primary-light text-[13px] font-bold text-primary
-                          ${'Notification' in window && notifPerm === 'default' ? '' : 'ml-auto'}`}>
+                          ${'Notification' in window ? '' : 'ml-auto'}`}>
             {user?.id?.charAt(0).toUpperCase() ?? '?'}
           </div>
         </header>
